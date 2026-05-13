@@ -29,10 +29,13 @@ git push -u origin main
 1. 进入仓库页面，点击 `Settings` → `Secrets and variables` → `Actions`
 2. 点击 `New repository secret`，添加：
    - Name: `SERVERCHAN_KEY`
-   - Value: `SCT309016TZanqZrmsqzYAij0ZQnxl3Z5S`
+   - Value: `你的Server酱Key`
 3. 再添加一个：
    - Name: `DEEPSEEK_API_KEY`
-   - Value: `sk-b0715cec5daf493aad5033ae75ffec8d`
+   - Value: `你的DeepSeek API Key`
+4. 可选：如需覆盖默认接口地址，可添加：
+   - Name: `DEEPSEEK_API_URL`
+   - Value: `https://api.edgefn.net/v1/chat/completions`
 
 ### 4. 启用 Actions
 

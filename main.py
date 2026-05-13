@@ -17,6 +17,7 @@ DEEPSEEK_API_URL = os.environ.get(
     "DEEPSEEK_API_URL",
     "https://api.edgefn.net/v1/chat/completions",
 )
+DEEPSEEK_MODEL = os.environ.get("DEEPSEEK_MODEL", "DeepSeek-V3.2")
 
 
 # ============ 焦点访谈爬取 ============
@@ -55,7 +56,7 @@ def fetch_jiaodian_fangtan():
 def rewrite_as_shenlun(title, content):
     """使用DeepSeek API改写成申论格式"""
     if not DEEPSEEK_API_KEY:
-        return simple_rewrite(title, content)
+        return simple_rewrite(title, content, "未读取到 DEEPSEEK_API_KEY")
 
     prompt = f"""   请基于最新央视《焦点访谈》节目内容，提炼公务员面试高频考点素材，形成结构化积累内容，需满足以下要求：
 一、标题要求
@@ -131,7 +132,7 @@ def rewrite_as_shenlun(title, content):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "deepseek-chat",
+                "model": DEEPSEEK_MODEL,
                 "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 2048
             },
@@ -142,11 +143,12 @@ def rewrite_as_shenlun(title, content):
         return result['choices'][0]['message']['content']
     except Exception as e:
         print(f"DeepSeek API调用失败: {e}")
-        return simple_rewrite(title, content)
+        return simple_rewrite(title, content, f"DeepSeek API调用失败：{e}")
 
 
-def simple_rewrite(title, content):
+def simple_rewrite(title, content, reason=None):
     """简单改写（无API时使用）"""
+    fallback_reason = f"\n\n（{reason}）" if reason else ""
     return f"""【标题】{title}
 
 【背景引入】
@@ -165,6 +167,8 @@ def simple_rewrite(title, content):
 关注时事，提升申论思维。
 
 【话题标签】#申论 #焦点访谈 #时事热点 #公务员考试
+
+（DeepSeek API暂不可用，未生成完整面试素材）{fallback_reason}
 
 ​
 """
